@@ -1,15 +1,61 @@
 ﻿#Requires AutoHotkey v2.0
 
-; Set the emulator executable path
-EmulatorPath := "C:\Users\Jochem\Downloads\noods-windows\noods.exe"
+; Define a list of emulator executable paths
+EmulatorPaths := Map()
+EmulatorPaths["noods"] := "C:\Users\Jochem\Downloads\noods-windows\noods.exe"
+EmulatorPaths["cemu"] := "D:\Cemu\Cemu.exe"
+EmulatorPaths["citra"] := "D:\Citra\citra-qt.exe"
+; Check if a command-line argument is provided
+if (A_Args.Length > 0) {
+    EmulatorKey := A_Args[1]
+    if (EmulatorPaths.Has(EmulatorKey)) {
+        EmulatorPath := EmulatorPaths[EmulatorKey]
+    } else {
+        MsgBox("Invalid emulator key provided.")
+        ExitApp
+    }
+} 
+else {
+    MsgBox("No emulator key provided.")
+    ExitApp
+}
 
 ; Run the emulator
-Run(EmulatorPath)
 
-; Give the emulator some time to load both screens (adjust the sleep time if needed)
-Sleep 2000
 
-emulator_windows := WinGetList("ahk_class wxWindowNR")
+if EmulatorKey == "citra"{
+    if !ProcessExist("citra-qt.exe") {
+        Run(EmulatorPath)
+
+        ; Give the emulator some time to load both screens (adjust the sleep time if needed)
+        Sleep 2000
+    }
+    emulator_windows := WinGetList("ahk_exe citra-qt.exe")
+}
+else if EmulatorKey == "cemu"{ 
+    
+    if !ProcessExist("Cemu.exe") {
+        Run(EmulatorPath)
+
+        ; Give the emulator some time to load both screens (adjust the sleep time if needed)
+        Sleep 2000
+    }
+    emulator_windows := WinGetList("ahk_exe Cemu.exe")
+}
+else if EmulatorKey == "noods"{
+
+    if !ProcessExist("noods.exe") {
+        Run(EmulatorPath)
+
+        ; Give the emulator some time to load both screens (adjust the sleep time if needed)
+        Sleep 2000
+    }
+    emulator_windows := WinGetList("ahk_exe noods.exe")
+}
+else{
+    MsgBox("Invalid emulator key provided.")
+    ExitApp
+}
 
 ; Get the number of monitors
 MonitorCount := SysGet(80) ; 80 is for the number of monitors
